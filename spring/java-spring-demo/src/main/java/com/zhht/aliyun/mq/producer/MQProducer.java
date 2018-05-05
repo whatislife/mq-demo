@@ -16,6 +16,7 @@ import com.aliyun.openservices.ons.api.SendCallback;
 import com.aliyun.openservices.ons.api.SendResult;
 import com.aliyun.openservices.ons.api.exception.ONSClientException;
 import com.zhht.aliyun.mq.constain.AliMQTopic;
+import com.zhht.aliyun.mq.util.User;
 @Service
 public class MQProducer {
 		
@@ -80,6 +81,8 @@ public class MQProducer {
 		// 在发送消息前，必须调用 start 方法来启动 Producer，只需调用一次即可
         producer.start();
 		try {
+//			User user = null;
+//			user.getName();
 			producer.sendAsync(msg, new SendCallback() {
                 @Override
                 public void onSuccess(final SendResult sendResult) {
@@ -95,6 +98,7 @@ public class MQProducer {
                 }
             });
         } catch (ONSClientException e) {
+		// } catch (Exception e) {
 			// 出现异常意味着发送失败，为了避免消息丢失，建议缓存该消息然后进行重试。
 			// 吃掉这个异常不影响主流程
 			System.out.println("###########消息队列发送失败：" + e.getMessage());
