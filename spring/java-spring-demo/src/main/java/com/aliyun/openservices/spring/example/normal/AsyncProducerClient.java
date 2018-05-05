@@ -30,7 +30,7 @@ public class AsyncProducerClient {
         producer.setCallbackExecutor(Executors.newFixedThreadPool(10));
 
         //循环发送消息
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1; i++) {
             Message msg = new Message( //
                 // Message所属的Topic
                 topic,
@@ -48,6 +48,7 @@ public class AsyncProducerClient {
                 producer.sendAsync(msg, new SendCallback() {
                     @Override
                     public void onSuccess(final SendResult sendResult) {
+                    	System.out.println("消费成功");
                         assert sendResult != null;
                         System.out.println(sendResult);
                     }

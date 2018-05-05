@@ -21,7 +21,7 @@ public class ProducerClient {
         String topic = properties.getProperty("Topic");
 
         //循环发送消息
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1; i++) {
             Message msg = new Message( //
                 // Message所属的Topic
                 topic,

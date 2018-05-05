@@ -8,10 +8,10 @@ import com.aliyun.openservices.ons.api.MessageListener;
 public class DemoMessageListener implements MessageListener {
 
     public Action consume(Message message, ConsumeContext context) {
-        System.out.println("Receive: " + message);
+        System.out.println("消费成功-Receive: " + message);
         try {
             //do something..
-            return Action.ReconsumeLater;
+            return Action.CommitMessage;
         } catch (Exception e) {
             //消费失败
             return Action.ReconsumeLater;

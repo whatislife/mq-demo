@@ -9,11 +9,11 @@
           class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="properties">
             <props>
-                <prop key="AccessKey">XXX</prop> <!-- 使用前请修改这些资源信息 -->
-                <prop key="SecretKey">XXX</prop>
-                <prop key="ConsumerId">XXX</prop>
-                <prop key="ProducerId">XXX</prop>
-                <prop key="Topic">XXX</prop>
+                <prop key="AccessKey">LTAIya0znEl2jTbR</prop> <!-- 使用前请修改这些资源信息 -->
+                <prop key="SecretKey">eCQxgSdixWNaPZFh2d40z890lNUnUa</prop>
+                <prop key="ConsumerId">CID_RECORD_TEST_01</prop>
+                <prop key="ProducerId">PID_RECORD_TEST_01</prop>
+                <prop key="Topic">RECORD_TEST</prop>
             </props>
         </property>
     </bean>
