@@ -12,6 +12,7 @@ public class ProducerDemoTest {
 	     MQProducer producer = (MQProducer)context.getBean("MQProducer");
 	     String body = "数据传递1";
 	     producer.sendMQ(AliMQTopic.RECORD_TEST, "TagA", body);
+	     //失败重试数据格式 topic tag body key 
 	}
 
 }
