@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop.xsd
+    http://www.springframework.org/schema/task  
+    http://www.springframework.org/schema/task/spring-task-3.2.xsd">
+    
+    <!-- 指定配置文件 -->
+    <context:property-placeholder location="classpath:*.properties"	ignore-unresolvable="true" />
+    
+    <bean id="msg1Listener" class="com.zhht.aliyun.mq.messageLinstener.Demo1MessageListener"/> <!--Listener配置-->
+    <bean id="consumerdemo1" class="com.aliyun.openservices.ons.api.bean.ConsumerBean" init-method="start"
+          destroy-method="shutdown">
+        <property name="properties"> <!--消费者配置信息-->
+            <props>
+                <prop key="ConsumerId">${mq.demo.ConsumerId}</prop> <!--请替换为自己的账户信息-->
+                <prop key="AccessKey">${mq.AccessKey}</prop>
+                <prop key="SecretKey">${mq.SecretKey}</prop>
+                <!--将消费者线程数固定为50个
+                 <prop key="ConsumeThreadNums">50</prop>
+                -->
+                <!-- 集群还是广播 -->
+                <prop key="MessageModel">${mq.demo.MessageModel}</prop>
+            </props>
+        </property>
+        <property name="subscriptionTable">
+            <map>
+                <entry value-ref="msg1Listener">
+                    <key>
+                        <bean class="com.aliyun.openservices.ons.api.bean.Subscription">
+                            <property name="topic" value="${mq.demo.Topic}"/>
+                            <property name="expression" value="*"/>
+                            <!--expression即Tag，可以设置成具体的Tag，如 taga||tagb||tagc，也可设置成*。 *仅代表订阅所有Tag，不支持通配-->
+                        </bean>
+                    </key>
+                </entry>
+                <!--更多的订阅添加entry节点即可-->
+            </map>
+        </property>
+    </bean>
+    
+    <bean id="msg2Listener" class="com.zhht.aliyun.mq.messageLinstener.Demo2MessageListener"/> <!--Listener配置-->
+    <bean id="consumerdemo2" class="com.aliyun.openservices.ons.api.bean.ConsumerBean" init-method="start"
+          destroy-method="shutdown">
+        <property name="properties"> <!--消费者配置信息-->
+            <props>
+                <prop key="ConsumerId">${mq.demo.ConsumerId}</prop> <!--请替换为自己的账户信息-->
+                <prop key="AccessKey">${mq.AccessKey}</prop>
+                <prop key="SecretKey">${mq.SecretKey}</prop>
+                <!--将消费者线程数固定为50个
+                 <prop key="ConsumeThreadNums">50</prop>
+                -->
+                <!-- 集群还是广播 -->
+                <prop key="MessageModel">${mq.demo.MessageModel}</prop>
+            </props>
+        </property>
+        <property name="subscriptionTable">
+            <map>
+                <entry value-ref="msg2Listener">
+                    <key>
+                        <bean class="com.aliyun.openservices.ons.api.bean.Subscription">
+                            <property name="topic" value="${mq.demo.Topic}"/>
+                            <property name="expression" value="*"/>
+                            <!--expression即Tag，可以设置成具体的Tag，如 taga||tagb||tagc，也可设置成*。 *仅代表订阅所有Tag，不支持通配-->
+                        </bean>
+                    </key>
+                </entry>
+                <!--更多的订阅添加entry节点即可-->
+            </map>
+        </property>
+    </bean>
+    
+ </beans>   
