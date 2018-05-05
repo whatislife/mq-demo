@@ -1,21 +1,28 @@
 package com.zhht.aliyun.mq.producer;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.OnExceptionContext;
 import com.aliyun.openservices.ons.api.Producer;
 import com.aliyun.openservices.ons.api.SendCallback;
 import com.aliyun.openservices.ons.api.SendResult;
 import com.aliyun.openservices.ons.api.exception.ONSClientException;
+import com.zhht.aliyun.mq.constain.AliMQTopic;
 @Service
 public class MQProducer {
 		
 	@Autowired
 	private Producer producer;
+	@Autowired
+	private RedisTemplate redisTemplate;
 	/**
 	 * 发送集群MQ 多个消费者只会有一个消费者接收到。
 	 * @param topic 可理解为一级类别
@@ -64,11 +71,16 @@ public class MQProducer {
 	 * @return
 	 */
 	private String sendMQ(Message msg) {
+		String body = new String(msg.getBody());
+		final Map<String,Object> map = new HashMap<String,Object>();
+		map.put("topic", msg.getTopic());
+	    map.put("tag", msg.getTag());
+		map.put("body",body);
 		//Producer producer = ONSFactory.createProducer(props);
 		// 在发送消息前，必须调用 start 方法来启动 Producer，只需调用一次即可
         producer.start();
 		try {
-            producer.sendAsync(msg, new SendCallback() {
+			producer.sendAsync(msg, new SendCallback() {
                 @Override
                 public void onSuccess(final SendResult sendResult) {
                 	System.out.println("数据发送成功");
@@ -78,13 +90,16 @@ public class MQProducer {
                 @Override
                 public void onException(final OnExceptionContext context) {
                     //出现异常意味着发送失败，为了避免消息丢失，建议缓存该消息然后进行重试。
+                	System.out.println("数据异常1");
+                	redisTemplate.opsForList().rightPush(AliMQTopic.MQ_ASSIGN, JSON.toJSONString(map));
                 }
             });
         } catch (ONSClientException e) {
 			// 出现异常意味着发送失败，为了避免消息丢失，建议缓存该消息然后进行重试。
 			// 吃掉这个异常不影响主流程
-			// log.error("###########消息队列发送失败：" + e.getMessage());
 			System.out.println("###########消息队列发送失败：" + e.getMessage());
+			System.out.println("数据异常2"+JSON.toJSONString(map));
+        	redisTemplate.opsForList().rightPush(AliMQTopic.MQ_ASSIGN, JSON.toJSONString(map));
         }
 		producer.shutdown();
 		return null;
