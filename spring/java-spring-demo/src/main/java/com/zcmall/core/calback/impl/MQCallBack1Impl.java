@@ -1,13 +1,15 @@
-package com.zcmall.core.mq;
+package com.zcmall.core.calback.impl;
 
 import com.aliyun.openservices.ons.api.ConsumeContext;
 import com.aliyun.openservices.ons.api.Message;
+import com.zcmall.core.calback.MQCallBack;
 
-public class MQCallBackImpl implements MQCallBack {
+public class MQCallBack1Impl implements MQCallBack {
 
 	@Override
 	public boolean exec(Message message, ConsumeContext context) {
-		System.out.println("消费成功-Receive: " + message);
+		String body = new String(message.getBody());
+		System.out.println("消费成功1-Receive: " + body);
         try {
             //do something..
             return true;

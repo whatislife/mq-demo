@@ -5,11 +5,14 @@ import java.util.Properties;
 
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.ONSFactory;
+import com.aliyun.openservices.ons.api.OnExceptionContext;
 import com.aliyun.openservices.ons.api.Producer;
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
+import com.aliyun.openservices.ons.api.SendCallback;
 import com.aliyun.openservices.ons.api.SendResult;
 //import com.zcmall.core.log.Log;
 //import com.zcmall.core.log.LogFactory;
+import com.aliyun.openservices.ons.api.exception.ONSClientException;
 
 public class MQProducerUtils {
 
@@ -19,15 +22,17 @@ public class MQProducerUtils {
 
 	static {
 		props = new Properties();
-//		props.put(PropertyKeyConst.ProducerId, MQFileConfig.getValue(MQConfigEnum.PRODUCER_ID));
-//		props.put(PropertyKeyConst.AccessKey, MQFileConfig.getValue(MQConfigEnum.ACCESS_KEY));
-//		props.put(PropertyKeyConst.SecretKey, MQFileConfig.getValue(MQConfigEnum.SECRET_KEY));
 		props.put(PropertyKeyConst.ProducerId, "PID_RECORD_TEST_01");
 		// AccessKey 阿里云身份验证，在阿里云服务器管理控制台创建
 		props.put(PropertyKeyConst.AccessKey, "LTAIya0znEl2jTbR");
 		// SecretKey 阿里云身份验证，在阿里云服务器管理控制台创建
 		props.put(PropertyKeyConst.SecretKey, "eCQxgSdixWNaPZFh2d40z890lNUnUa");
 		
+        //设置发送超时时间，单位毫秒
+		//props.setProperty(PropertyKeyConst.SendMsgTimeoutMillis, "3000");
+        // 设置 TCP 接入域名（此处以公共云生产环境为例）
+		//props.put(PropertyKeyConst.ONSAddr,
+        //"http://onsaddr-internet.aliyun.com/rocketmq/nsaddr4client-internet");
 	}
 
 	/**
@@ -76,19 +81,29 @@ public class MQProducerUtils {
 	 * @return
 	 */
 	private static String sendMQ(Message msg) {
+		Producer producer = ONSFactory.createProducer(props);
+		// 在发送消息前，必须调用 start 方法来启动 Producer，只需调用一次即可
+        producer.start();
 		try {
-			Producer producer = ONSFactory.createProducer(props);
-			// 在发送消息前，必须调用start方法来启动Producer，只需调用一次即可。
-			producer.start();
-			// 发送消息，只要不抛异常就是成功
-			SendResult sendResult = producer.send(msg);
-			producer.shutdown();
-			return sendResult.getMessageId();
-		} catch (Exception e) {
+            producer.sendAsync(msg, new SendCallback() {
+                @Override
+                public void onSuccess(final SendResult sendResult) {
+                	System.out.println("数据发送成功");
+                    System.out.println(sendResult);
+                }
+
+                @Override
+                public void onException(final OnExceptionContext context) {
+                    //出现异常意味着发送失败，为了避免消息丢失，建议缓存该消息然后进行重试。
+                }
+            });
+        } catch (ONSClientException e) {
+			// 出现异常意味着发送失败，为了避免消息丢失，建议缓存该消息然后进行重试。
 			// 吃掉这个异常不影响主流程
-			//log.error("###########消息队列发送失败：" + e.getMessage());
+			// log.error("###########消息队列发送失败：" + e.getMessage());
 			System.out.println("###########消息队列发送失败：" + e.getMessage());
-		}
+        }
+		producer.shutdown();
 		return null;
 	}
 }

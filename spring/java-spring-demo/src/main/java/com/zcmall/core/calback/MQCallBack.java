@@ -1,4 +1,4 @@
-package com.zcmall.core.mq;
+package com.zcmall.core.calback;
 
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.ConsumeContext;

@@ -14,6 +14,10 @@
                 <prop key="ConsumerId">CID_RECORD_TEST_01</prop>
                 <prop key="ProducerId">PID_RECORD_TEST_01</prop>
                 <prop key="Topic">RECORD_TEST</prop>
+                <!-- 集群 -->
+                <!-- <prop key="MessageModel">CLUSTERING</prop> -->
+                <!-- 广播 -->
+                <prop key="MessageModel">BROADCASTING</prop>
             </props>
         </property>
     </bean>

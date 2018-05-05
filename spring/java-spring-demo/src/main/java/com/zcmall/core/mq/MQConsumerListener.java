@@ -10,6 +10,7 @@ import com.aliyun.openservices.ons.api.MessageListener;
 import com.aliyun.openservices.ons.api.ONSFactory;
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
 import com.aliyun.openservices.ons.api.PropertyValueConst;
+import com.zcmall.core.calback.MQCallBack;
 
 public class MQConsumerListener {
 	//private static Log log = LogFactory.getLog(MQProducerUtils.class);
@@ -37,7 +38,8 @@ public class MQConsumerListener {
 	 */
 	public static void MQListener(String topic, String tag, final MQCallBack callBack,String consumerId){
 		props.put(PropertyKeyConst.ConsumerId, consumerId);
-//		props.put(PropertyKeyConst.MessageModel,PropertyValueConst.CLUSTERING);
+		//默认数据
+        //props.put(PropertyKeyConst.MessageModel,PropertyValueConst.CLUSTERING);
 		Consumer consumer = ONSFactory.createConsumer(props);
 		System.out.println(consumer);
 		consumer.subscribe(topic, tag, new MessageListener() {
@@ -63,6 +65,7 @@ public class MQConsumerListener {
 	 * @param consumerId 订阅者ID
 	 */
 	public static void MQPubSubListener(final String topic,final String tag, final MQCallBack callBack,String consumerId){
+		props.put(PropertyKeyConst.ConsumerId, consumerId);
 		props.put(PropertyKeyConst.MessageModel,PropertyValueConst.BROADCASTING);
         Consumer consumer = ONSFactory.createConsumer(props);
         consumer.subscribe(topic, tag, new MessageListener() {
