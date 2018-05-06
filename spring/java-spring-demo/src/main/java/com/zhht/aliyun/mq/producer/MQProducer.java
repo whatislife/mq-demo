@@ -17,6 +17,7 @@ import com.aliyun.openservices.ons.api.SendResult;
 import com.aliyun.openservices.ons.api.exception.ONSClientException;
 import com.zhht.aliyun.mq.constain.AliMQTopic;
 import com.zhht.aliyun.mq.util.User;
+import com.zhht.aliyun.mq.util.UserService;
 @Service
 public class MQProducer {
 		
@@ -24,6 +25,8 @@ public class MQProducer {
 	private Producer producer;
 	@Autowired
 	private RedisTemplate redisTemplate;
+	@Autowired
+	private UserService userService;
 	/**
 	 * 发送集群MQ 多个消费者只会有一个消费者接收到。
 	 * @param topic 可理解为一级类别
@@ -72,6 +75,7 @@ public class MQProducer {
 	 * @return
 	 */
 	private String sendMQ(Message msg) {
+		System.out.println(userService.getName("songjian"));
 		String body = new String(msg.getBody());
 		final Map<String,Object> map = new HashMap<String,Object>();
 		map.put("topic", msg.getTopic());
@@ -80,33 +84,41 @@ public class MQProducer {
 		//Producer producer = ONSFactory.createProducer(props);
 		// 在发送消息前，必须调用 start 方法来启动 Producer，只需调用一次即可
         producer.start();
+        String messageId = "";
 		try {
-//			User user = null;
-//			user.getName();
+			User user = null;
+			user.getName();
 			producer.sendAsync(msg, new SendCallback() {
                 @Override
                 public void onSuccess(final SendResult sendResult) {
-                	System.out.println("数据发送成功");
                     System.out.println(sendResult);
+                 // 消费发送成功
+                    System.out.println("send message success. topic=" + sendResult.getTopic() + ", msgId=" + sendResult.getMessageId());
                 }
 
                 @Override
                 public void onException(final OnExceptionContext context) {
+                	// 消息发送失败
+                    System.out.println("send message failed. topic=" + context.getTopic() + ", msgId=" + context.getMessageId());
                     //出现异常意味着发送失败，为了避免消息丢失，建议缓存该消息然后进行重试。
-                	System.out.println("数据异常1");
                 	redisTemplate.opsForList().rightPush(AliMQTopic.MQ_ASSIGN, JSON.toJSONString(map));
                 }
             });
-        } catch (ONSClientException e) {
-		// } catch (Exception e) {
+			// 在callback返回之前即可取得msgId。
+		    System.out.println("send message async. topic=" + msg.getTopic() + ", msgId=" + msg.getMsgID());
+		    messageId = msg.getMsgID();
+//        } catch (ONSClientException e) {
+		 } catch (Exception e) {
 			// 出现异常意味着发送失败，为了避免消息丢失，建议缓存该消息然后进行重试。
 			// 吃掉这个异常不影响主流程
+        	messageId = null;
 			System.out.println("###########消息队列发送失败：" + e.getMessage());
 			System.out.println("数据异常2"+JSON.toJSONString(map));
         	redisTemplate.opsForList().rightPush(AliMQTopic.MQ_ASSIGN, JSON.toJSONString(map));
         }
+		
 		producer.shutdown();
-		return null;
+		return messageId;
 	}
 
 }

@@ -18,7 +18,11 @@
     
     <!-- 指定配置文件 -->
     <context:property-placeholder location="classpath:*.properties"	ignore-unresolvable="true" />
-    
+    <!-- 扫描文件（自动将servicec层注入） -->
+	<context:component-scan base-package="com.zhht.aliyun.mq.util" />
+    <!-- 用于在任意地方获取spring管理的bean -->
+	<bean class="com.zhbc.framework.support.SpringContextUtils" />
+	
     <bean id="msg1Listener" class="com.zhht.aliyun.mq.messageLinstener.Demo1MessageListener"/> <!--Listener配置-->
     <bean id="consumerdemo1" class="com.aliyun.openservices.ons.api.bean.ConsumerBean" init-method="start"
           destroy-method="shutdown">
@@ -81,7 +85,7 @@
         </property>
     </bean>
     
-    <bean id="msg3Listener" class="com.zhht.aliyun.mq.messageLinstener.Demo3MessageListener"/> <!--Listener配置-->
+   <bean id="msg3Listener" class="com.zhht.aliyun.mq.messageLinstener.Demo3MessageListener"/><!--Listener配置-->
     <bean id="consumerdemo3" class="com.aliyun.openservices.ons.api.bean.ConsumerBean" init-method="start"
           destroy-method="shutdown">
         <property name="properties"> <!--消费者配置信息-->
@@ -111,5 +115,4 @@
             </map>
         </property>
     </bean>
-    
  </beans>   

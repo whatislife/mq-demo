@@ -10,7 +10,7 @@ public class JobListener implements	ApplicationListener<ContextRefreshedEvent> {
 	ProducerAssignTask producerAssignTask;
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-
+		//判断spring容器是否加载完成
 		if (event.getApplicationContext().getParent() == null) {
 			try {
 				System.out.println("assignTaskStart");
