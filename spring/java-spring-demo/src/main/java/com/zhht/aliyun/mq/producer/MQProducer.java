@@ -15,6 +15,7 @@ import com.aliyun.openservices.ons.api.Producer;
 import com.aliyun.openservices.ons.api.SendCallback;
 import com.aliyun.openservices.ons.api.SendResult;
 import com.aliyun.openservices.ons.api.exception.ONSClientException;
+import com.zhbc.framework.support.TransformForMQ;
 import com.zhht.aliyun.mq.constain.AliMQTopic;
 import com.zhht.aliyun.mq.util.User;
 import com.zhht.aliyun.mq.util.UserService;
@@ -77,10 +78,14 @@ public class MQProducer {
 	private String sendMQ(Message msg) {
 		System.out.println(userService.getName("songjian"));
 		String body = new String(msg.getBody());
-		final Map<String,Object> map = new HashMap<String,Object>();
-		map.put("topic", msg.getTopic());
-	    map.put("tag", msg.getTag());
-		map.put("body",body);
+//		final Map<String,Object> map = new HashMap<String,Object>();
+//		map.put("topic", msg.getTopic());
+//	    map.put("tag", msg.getTag());
+//		map.put("body",body);
+		final TransformForMQ map = new TransformForMQ();
+		map.setTopic(msg.getTopic());
+		map.setTag(msg.getTag());
+		map.setBody(body);
 		//Producer producer = ONSFactory.createProducer(props);
 		// 在发送消息前，必须调用 start 方法来启动 Producer，只需调用一次即可
         producer.start();
@@ -101,7 +106,7 @@ public class MQProducer {
                 	// 消息发送失败
                     System.out.println("send message failed. topic=" + context.getTopic() + ", msgId=" + context.getMessageId());
                     //出现异常意味着发送失败，为了避免消息丢失，建议缓存该消息然后进行重试。
-                	redisTemplate.opsForList().rightPush(AliMQTopic.MQ_ASSIGN, JSON.toJSONString(map));
+                	redisTemplate.opsForList().rightPush(AliMQTopic.MQ_ASSIGN, map);
                 }
             });
 			// 在callback返回之前即可取得msgId。
@@ -114,7 +119,7 @@ public class MQProducer {
         	messageId = null;
 			System.out.println("###########消息队列发送失败：" + e.getMessage());
 			System.out.println("数据异常2"+JSON.toJSONString(map));
-        	redisTemplate.opsForList().rightPush(AliMQTopic.MQ_ASSIGN, JSON.toJSONString(map));
+        	redisTemplate.opsForList().rightPush(AliMQTopic.MQ_ASSIGN, map);
         }
 		
 		producer.shutdown();

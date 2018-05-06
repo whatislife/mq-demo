@@ -3,13 +3,13 @@ package com.zhht.aliyun.mq.messageLinstener;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alibaba.fastjson.JSON;
 import com.aliyun.openservices.ons.api.Action;
 import com.aliyun.openservices.ons.api.ConsumeContext;
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.MessageListener;
-import com.zhbc.framework.support.SpringContextUtils;
+import com.zhht.aliyun.mq.util.RecordCheckReq;
 import com.zhht.aliyun.mq.util.UserService;
-import com.zhht.aliyun.mq.util.UserServiceImpl;
 
 public class Demo3MessageListener implements MessageListener {
 	@Autowired
@@ -20,7 +20,8 @@ public class Demo3MessageListener implements MessageListener {
         try {
             //do something..
         	//UserService mMessageDistribute = (UserService)SpringContextUtils.getBean("userService"); 
-        	String name = mMessageDistribute.getName(body.toString());
+        	RecordCheckReq req = JSON.parseObject(body.toString(), RecordCheckReq.class);
+        	String name = mMessageDistribute.getName(JSON.toJSONString(req));
         	System.out.println("监听接受的数据："+name);
             return Action.CommitMessage;
         } catch (Exception e) {
