@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.zhbc.framework.support.TransformForMQ;
-import com.zhbc.framework.support.TransformForWS;
 import com.zhht.aliyun.mq.constain.AliMQTopic;
 import com.zhht.aliyun.mq.producer.MQProducer;
 
@@ -32,14 +31,6 @@ public class ProducerAssignTask {
 				try {
 					while (true) {
 						try {
-//							String s = (String) redisTemplate.opsForList().leftPop(AliMQTopic.MQ_ASSIGN);
-//							System.out.println("assignTaskStart-json-"+s);
-//							if (s == null) {
-//								Thread.sleep(1000);
-//								continue;
-//							}
-							
-
 							TransformForMQ p = (TransformForMQ) redisTemplate.opsForList().leftPop(AliMQTopic.MQ_ASSIGN);
 							System.out.println("assignTaskStart-json-"+JSON.toJSONString(p));
 							if (p == null) {
@@ -47,20 +38,8 @@ public class ProducerAssignTask {
 								continue;
 							}
 							// 重新分配数据
-//					    	TransformForMQ p = new TransformForMQ();
-//					    	p =	JSON.parseObject(s, new TypeReference<TransformForMQ<Map<String, Object>>>(){});
-					    	//TransformForMQ p =	JSON.parseObject(s, TransformForMQ.class);
-					    	System.out.println("==================="+p.getTopic()+":"+p.getTag()+":"+p.getBody());
-//						    producer.sendMQ(AliMQTopic.RECORD_TEST, "TagA", JSON.toJSONString(p.getBody()));
-						    producer.sendMQ(p.getTopic(), p.getTag(), p.getBody());
-							
-							/*// 重新分配数据
-//					    	TransformForMQ p = new TransformForMQ();
-//					    	p =	JSON.parseObject(s, new TypeReference<TransformForMQ<Map<String, Object>>>(){});
-					    	TransformForMQ p =	JSON.parseObject(s, TransformForMQ.class);
-					    	System.out.println("==================="+p.getTopic()+":"+p.getTag()+":"+p.getBody());
-//						    producer.sendMQ(AliMQTopic.RECORD_TEST, "TagA", JSON.toJSONString(p.getBody()));
-						    producer.sendMQ(p.getTopic(), p.getTag(), p.getBody());*/
+					    	System.out.println("==================="+p.getTopic()+":"+p.getTag()+":"+JSON.toJSONString(p.getBody()));
+						    producer.sendMQ(p.getTopic(), p.getTag(), JSON.toJSONString(p));
 						} catch (Exception e) {
 							e.printStackTrace();
 							continue;

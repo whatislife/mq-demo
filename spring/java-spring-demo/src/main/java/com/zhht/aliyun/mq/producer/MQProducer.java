@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.OnExceptionContext;
 import com.aliyun.openservices.ons.api.Producer;
@@ -78,21 +79,14 @@ public class MQProducer {
 	private String sendMQ(Message msg) {
 		System.out.println(userService.getName("songjian"));
 		String body = new String(msg.getBody());
-//		final Map<String,Object> map = new HashMap<String,Object>();
-//		map.put("topic", msg.getTopic());
-//	    map.put("tag", msg.getTag());
-//		map.put("body",body);
-		final TransformForMQ map = new TransformForMQ();
-		map.setTopic(msg.getTopic());
-		map.setTag(msg.getTag());
-		map.setBody(body);
+		final TransformForMQ map = JSON.parseObject(body, new TypeReference<TransformForMQ<Map<String, Object>>>(){});
 		//Producer producer = ONSFactory.createProducer(props);
 		// 在发送消息前，必须调用 start 方法来启动 Producer，只需调用一次即可
         producer.start();
         String messageId = "";
 		try {
-			User user = null;
-			user.getName();
+//			User user = null;
+//			user.getName();
 			producer.sendAsync(msg, new SendCallback() {
                 @Override
                 public void onSuccess(final SendResult sendResult) {

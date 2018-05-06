@@ -12,25 +12,19 @@ import net.sf.json.util.JSONUtils;
 
 import com.alibaba.fastjson.JSON;
 
-public class TransformForMQ implements Serializable {
+public class TransformForMQ<T> implements Serializable {
 
 	private static final long serialVersionUID = -8984597410657442040L;
 	private String topic;
 	private String tag;
 	private String key;
-	private String body;
+	private T body;
 	
-//	public static TransformForMQ<?> fromJson(String json) {
-//		//JSON.toJSON(javaObject, parserConfig)
-//		TransformForMQ<?> t=JSON.parseObject(json, TransformForMQ.class);
-//		return t;
-//	}
-	
-	public static TransformForMQ fromJson(String json) {
-		TransformForMQ t=JSON.parseObject(json, TransformForMQ.class);
+	public static TransformForMQ<?> fromJson(String json) {
+		//JSON.toJSON(javaObject, parserConfig)
+		TransformForMQ<?> t=JSON.parseObject(json, TransformForMQ.class);
 		return t;
 	}
-	
 	
 	public static TransformForMQ fromJson(String json,Map<String,Class> map){
 		JsonConfig jsonConfig = new JsonConfig();
@@ -84,13 +78,14 @@ public class TransformForMQ implements Serializable {
 		this.key = key;
 	}
 
-	public String getBody() {
+	public T getBody() {
 		return body;
 	}
 
-	public void setBody(String body) {
+	public void setBody(T body) {
 		this.body = body;
 	}
+
 
 
 

@@ -9,7 +9,7 @@ public class Demo2MessageListener implements MessageListener {
 
     public Action consume(Message message, ConsumeContext context) {
     	String body = new String(message.getBody());
-        System.out.println("消费成功2-Receive: " + message.getKey()+":"+body.toString());
+    	System.out.println("消费成功2-Receive: " + message.getKey()+":"+message.getTopic()+":"+body.toString());
         try {
             //do something..
             return Action.CommitMessage;
