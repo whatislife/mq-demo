@@ -12,3 +12,6 @@ AliwareMQ 支持以Spring的方式接入，1.6.0.Final+的SDK提供包括所有C
 * consumer.xml， 使用普通Consumer的配置文件
 * order_consumer.xml， 使用OrderConsumer的配置文件
 * batch_consumer.xml， 使用BatchConsumer的配置文件
+
+MQ地址
+https://ons.console.aliyun.com/?spm=5176.2020520001.1011.2.6Tw9Il#/homePub?_k=nq6pro&regionId=cn-qingdao-publictest
