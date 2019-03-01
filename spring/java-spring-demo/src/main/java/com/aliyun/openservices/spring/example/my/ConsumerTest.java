@@ -13,6 +13,7 @@ import java.util.Properties;
 public class ConsumerTest {
     public static void main(String[] args) {
         Properties properties = new Properties();
+        
         // 您在控制台创建的 Consumer ID
         properties.put(PropertyKeyConst.ConsumerId, "CID_RECORD_TEST_01");
         // AccessKey 阿里云身份验证，在阿里云服务器管理控制台创建
